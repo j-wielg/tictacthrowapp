@@ -9,6 +9,9 @@ Parse.initialize(ENV.APPLICATION_ID, ENV.JAVASCRIPT_KEY);
 Parse.serverURL = ENV.SERVER_URL;
 
 
+/**
+  * The main entry point for the React web application
+  */
 function App() {
   // Manages state
   const [gamedata, setGamedata] = useState({});

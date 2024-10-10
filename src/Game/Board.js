@@ -1,3 +1,9 @@
+
+/**
+  * Child component of Game which renders the Tic Tac Throw board.
+  *
+  * @param {Array<number>} pieces An array containing the location of each player's pieces
+  */
 export function Board(pieces) {
   pieces = pieces.pieces;
   // Prints the default board

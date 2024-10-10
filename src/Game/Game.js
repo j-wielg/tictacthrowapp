@@ -2,7 +2,12 @@ import { Board } from './Board';
 import Parse from 'parse';
 
 
-// Helper function which fetches game data
+/**
+  * An async function that fetches gamestate data from the server.
+  * Returns undefined in the event of a failure.
+  *
+  * @returns {Promise<(Object|undefined)>} The result of the request, wrapped in a Promise
+  */
 export async function fetchGame() {
   const gameState = Parse.Object.extend('gameState');
   const query = new Parse.Query(gameState);
@@ -21,7 +26,11 @@ export async function fetchGame() {
 }
 
 
-// Component that renders the game
+/**
+  * Component that renders the Tic Tac Throw game.
+  *
+  * @param {Object} gamestate A gameState object fetched using Parse.
+  */
 export function Game(gamestate) {
   // Converts the player
   var convert_player = (p) => {
@@ -39,8 +48,10 @@ export function Game(gamestate) {
       </div>
     );
   } catch (e) {
+    return (
       <div>
         <p>Waiting on server...</p>
       </div>
+    )
   }
 }
