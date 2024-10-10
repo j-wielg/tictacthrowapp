@@ -32,8 +32,8 @@ export function Board(pieces) {
   // Turns piece information into string
   var sp = pieces.map((arr) => {
     return arr.map((piece) => {
-      if (piece == 0) return "_";
-      else if (piece == 1) return "X";
+      if (piece === 0) return "_";
+      else if (piece === 1) return "X";
       else return "O";
     })
   })

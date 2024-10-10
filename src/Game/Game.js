@@ -34,7 +34,7 @@ export async function fetchGame() {
 export function Game(gamestate) {
   // Converts the player
   var convert_player = (p) => {
-    if (p == 1) return "1";
+    if (p === 1) return "1";
     else return "2";
   };
 
