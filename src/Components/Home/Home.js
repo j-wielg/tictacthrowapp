@@ -1,6 +1,7 @@
-import { Game, fetchGame } from '../Game/Game'
+import { Game } from '../Game/Game'
 import NameForm from '../Game/NameForm'
 import { useState, useEffect } from 'react';
+import { getDefaultGame } from '../../Services/GameStateService'
 
 export default function Home() {
   // Manages state for game data
@@ -9,7 +10,7 @@ export default function Home() {
 
   // Change the gamestate when request completes
   useEffect(() => {
-    fetchGame().then((game) => {
+    getDefaultGame().then((game) => {
       setGamedata(game);
       console.log("Received game data: ", game);
     });

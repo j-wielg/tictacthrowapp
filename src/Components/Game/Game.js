@@ -1,29 +1,4 @@
 import { Board } from './Board';
-import Parse from 'parse';
-
-
-/**
-  * An async function that fetches gamestate data from the server.
-  * Returns undefined in the event of a failure.
-  *
-  * @returns {Promise<(Object|undefined)>} The result of the request, wrapped in a Promise
-  */
-export async function fetchGame() {
-  const gameState = Parse.Object.extend('gameState');
-  const query = new Parse.Query(gameState);
-  query.equalTo("objectId", "Ugyx8Ld4QO");
-
-  try {
-    const results = await query.find();
-    for (const object of results) {
-      return object;
-    }
-
-  } catch (e) {
-    console.error("Failed to fetch game data!");
-    return undefined;
-  }
-}
 
 
 /**
