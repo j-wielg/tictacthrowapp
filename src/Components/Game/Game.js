@@ -1,5 +1,4 @@
 import { Board } from './Board';
-import Parse from 'parse';
 
 
 /**
