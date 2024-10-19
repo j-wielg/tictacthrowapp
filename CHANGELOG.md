@@ -7,6 +7,7 @@
 
  - Imported the 'react-router-dom' package as a dependency
  - Implemented routing
+ - Added service which fetches the default game from the server
 
 ### Changed
 
