@@ -1,6 +1,8 @@
+// Component imports
 import Home from './Home/Home'
 import Rules from './Rules/Rules'
 import Navbar from './Navbar/Navbar'
+import Settings from './Settings/Settings'
 
 // Imports routing packages
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
