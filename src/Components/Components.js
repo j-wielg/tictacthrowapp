@@ -6,6 +6,8 @@ import Settings from './Settings/Settings'
 
 // Imports routing packages
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ProtectedRoute from '../Services/ProtectedRoute'
+
 
 /**
  * Renders the app. Handles routing for the webapp
@@ -17,6 +19,9 @@ export default function Components() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rules/" element={<Rules />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/settings" element={<Settings />} />
+        </Route>
       </Routes>
     </Router>
   );
