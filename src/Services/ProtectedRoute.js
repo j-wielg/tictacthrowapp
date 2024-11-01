@@ -1,33 +1,35 @@
 // Wrapper around react-router-dom which supports protected routes
 
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, Outlet } from "react-router-dom";
+import Parse from 'parse';
 
 /**
- * Creates a protected route using react-router-dom. By default,
- * 'go back' navigates one directory up from the current path.
- *
- * @param element - The JSX element corresponding to the protected route
- * @param {boolean} flag - Whether or not the user has permission to see the route
- * @param {string} path - The path to the route
+ * Uses react-router-dom to prevent users from accessing certain routes.
  */
-export default function ProtectedRoute({
-  element,
-  flag,
-  path
-}) {
+export default function ProtectedRoute() {
   const navigate = useNavigate();
   const goBackHandler = () => {
     navigate("..");
   };
+  const loginHandler = () => {
+    navigate("/login");
+  }
+  const signupHandler = () => {
+    navigate("/signup");
+  }
+
+  var user = Parse.User.current();
 
   return (
     <div>
-      {flag ? (
-        <Navigate to={path} replace />
+      {user ? (
+        <Outlet />
       ) : (
         <div class="authFailure">
-          <p>Unauthorized</p>
+          <p>This page cannot be accessed with a guest account</p>
           <button onClick={goBackHandler}>Go Back</button>
+          <button onClick={loginHandler}>Log In</button>
+          <button onClick={signupHandler}>Sign Up</button>
         </div>
       )}
     </div>
