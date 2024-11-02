@@ -41,6 +41,7 @@ export default function AuthForm({ user, onChange, onSubmit }) {
                 value={value}
                 name={field}
                 placeholder={field}
+                onChange={onChange}
                 required
               />
             </div>
