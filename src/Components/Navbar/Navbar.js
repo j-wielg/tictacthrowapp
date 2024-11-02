@@ -14,6 +14,9 @@ export default function Navbar() {
         <li>
           <Link to="/rules/">Rules</Link>
         </li>
+        <li>
+          <Link to="/settings">Settings</Link>
+        </li>
       </ul>
     </div>
   );
