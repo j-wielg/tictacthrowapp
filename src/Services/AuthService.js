@@ -15,7 +15,7 @@ export async function registerUser(username, password, email) {
   var user = new Parse.User();
   user.set("username", username);
   user.set("password", password);
-  if (email != undefined) {
+  if (email !== undefined) {
     user.set("email", email);
   }
   // Makes a request to add the user to the server
