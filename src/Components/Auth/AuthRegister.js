@@ -46,6 +46,7 @@ export default function AuthRegister() {
 
   return (
     <div>
+      <h1>Register</h1>
       <AuthForm user={newUser} onChange={onChangeHandler} onSubmit={onSubmitHandler} />
     </div>
   );
