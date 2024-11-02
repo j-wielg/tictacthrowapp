@@ -29,11 +29,11 @@ export default function AuthForm({ user, onChange, onSubmit }) {
   }
 
   return (
-    <div class="AuthForm">
+    <div className="AuthForm">
       <form onSubmit={onSubmit}>
         {Object.entries(user).map(([ field, value ]) => {
           return (
-            <div>
+            <div key={field}>
               <label>{toTitleCase(field)}</label>
               <br />
               <input
@@ -47,6 +47,7 @@ export default function AuthForm({ user, onChange, onSubmit }) {
             </div>
           );
         })}
+      <button type="submit" onSubmit={onSubmit}>Submit</button>
       </form>
     </div>
   )
