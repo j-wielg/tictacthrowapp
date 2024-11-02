@@ -3,6 +3,7 @@ import Home from './Home/Home'
 import Rules from './Rules/Rules'
 import Navbar from './Navbar/Navbar'
 import Settings from './Settings/Settings'
+import AuthFailure from './Auth/AuthFailure'
 
 // Imports routing packages
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -19,7 +20,8 @@ export default function Components() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rules/" element={<Rules />} />
-        <Route element={<ProtectedRoute />}>
+        <Route path="/unauthorized" element={<AuthFailure />} />
+        <Route element={<ProtectedRoute path='/unauthorized' />}>
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
