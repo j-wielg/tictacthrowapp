@@ -23,7 +23,8 @@ export default function AuthRegister() {
     setNewUser({ ...newUser, [name]: newValue })
   }
 
-  const onSubmitHandler = () => {
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
     registerUser(newUser.username, newUser.password, newUser.email)
     .catch((error) => {
         alert(error.message);
@@ -31,10 +32,6 @@ export default function AuthRegister() {
     .then((createdUser) => {
         console.log('Created user: ', createdUser)
     });
-
-    // This navigate is required for this code to work properly
-    // Could not tell you why
-    navigate('/')
   }
 
   useEffect(() => {

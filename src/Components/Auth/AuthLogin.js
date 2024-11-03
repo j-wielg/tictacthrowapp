@@ -22,7 +22,8 @@ export default function AuthLogin() {
     setUser({ ...user, [name]: newValue })
   }
 
-  const onSubmitHandler = () => {
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
     loginUser(user.username, user.password)
     .catch((error) => {
         alert(error.message);
@@ -30,10 +31,6 @@ export default function AuthLogin() {
     .then((userObj) => {
         console.log('Logged in user: ', userObj)
     });
-
-    // This navigate is required for this code to work properly
-    // Could not tell you why
-    navigate('/')
   }
 
   useEffect(() => {
