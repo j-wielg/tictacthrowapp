@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from './AuthForm';
 import {loginUser} from '../../Services/AuthService'
@@ -10,11 +10,11 @@ import {loginUser} from '../../Services/AuthService'
  */
 export default function AuthLogin() {
   const navigate = useNavigate();
-  const [add, setAdd] = useState(false);
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
+  const [errorText, setErrorText] = useState("");
 
   const onChangeHandler = (e) => {
     e.preventDefault();
@@ -25,25 +25,25 @@ export default function AuthLogin() {
   const onSubmitHandler = (e) => {
     e.preventDefault();
     loginUser(user.username, user.password)
-    .catch((error) => {
-        alert(error.message);
-    })
     .then((userObj) => {
         console.log('Logged in user: ', userObj);
         navigate('/');
-    });
+    })
+    .catch((error) => {
+        setErrorText(error.message);
+    })
   }
-
-  useEffect(() => {
-    if (user && add) {
-      // TODO
-      setAdd(false);
-    }
-  }, [user, add]);
 
   return (
     <div>
       <h1>Log In</h1>
+      {errorText ? (
+        <div>
+          <p>{errorText}</p>
+        </div>
+      ) : (
+        <div></div>
+      )}
       <AuthForm user={user} onChange={onChangeHandler} onSubmit={onSubmitHandler} />
     </div>
   );
