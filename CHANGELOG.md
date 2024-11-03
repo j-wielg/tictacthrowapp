@@ -15,7 +15,7 @@ N/A
 ### Fixed
 
  - Fixed a bug that prevented register/login requests from reaching the database
- - Removed an unused input (useEffect) from register/login
+ - Removed an unused import (useEffect) from register/login
 
 ## [0.3.0] - 2024-11-01
 
