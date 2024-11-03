@@ -10,6 +10,7 @@ N/A
 ### Changed
 
  - Login/register now render error messages instead of printing to console
+ - User is navigated to '/' upon successful register/login
 
 ### Fixed
 
