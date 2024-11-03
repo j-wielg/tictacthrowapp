@@ -10,7 +10,6 @@ import {registerUser} from '../../Services/AuthService'
  */
 export default function AuthRegister() {
   const navigate = useNavigate();
-  const [add, setAdd] = useState(false);
   const [newUser, setNewUser] = useState({
     username: "",
     password: "",
@@ -31,15 +30,9 @@ export default function AuthRegister() {
     })
     .then((createdUser) => {
         console.log('Created user: ', createdUser)
+        navigate('/');
     });
   }
-
-  useEffect(() => {
-    if (newUser && add) {
-      // TODO
-      setAdd(false);
-    }
-  }, [newUser, add]);
 
   return (
     <div>

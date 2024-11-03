@@ -29,7 +29,8 @@ export default function AuthLogin() {
         alert(error.message);
     })
     .then((userObj) => {
-        console.log('Logged in user: ', userObj)
+        console.log('Logged in user: ', userObj);
+        navigate('/');
     });
   }
 
