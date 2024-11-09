@@ -1,7 +1,7 @@
 import { Game } from '../Game/Game'
-import NameForm from '../Game/NameForm'
 import { useState, useEffect } from 'react';
 import { getDefaultGame } from '../../Services/GameStateService'
+import { logoutUser } from '../../Services/AuthService';
 
 export default function Home() {
   // Manages state for game data
@@ -16,9 +16,14 @@ export default function Home() {
     });
   }, []);
 
+  // Logs out the user
+  const onLogoutClick = () => {
+    logoutUser();
+  }
+
   return (
     <div>
-      <NameForm />
+      <button onClick={onLogoutClick}>Logout</button>
       <Game gamestate={gamedata} />
     </div>
   );
