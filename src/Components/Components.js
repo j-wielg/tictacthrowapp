@@ -9,7 +9,7 @@ import AuthLogin from './Auth/AuthLogin'
 
 // Imports routing packages
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ProtectedRoute from '../Services/ProtectedRoute'
+import ProtectedRoute from './Routes/ProtectedRoute'
 
 
 /**

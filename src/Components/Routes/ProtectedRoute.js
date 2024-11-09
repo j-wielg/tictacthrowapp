@@ -9,7 +9,7 @@ import Parse from 'parse';
  * @param path - The path to redirect to for an unauthorized user
  */
 export default function ProtectedRoute({path}) {
-  var user = Parse.User.current();
+  var user = Parse.User.current()?.authenticated();
 
   return (
     <div>
