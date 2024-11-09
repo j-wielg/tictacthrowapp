@@ -10,6 +10,7 @@ import AuthLogin from './Auth/AuthLogin'
 // Imports routing packages
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './Routes/ProtectedRoute'
+import GuestRoute from './Routes/GuestRoute'
 
 
 /**
@@ -21,12 +22,16 @@ export default function Components() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/register" element={<AuthRegister />} />
-        <Route path="/login" element={<AuthLogin />} />
         <Route path="/rules/" element={<Rules />} />
         <Route path="/unauthorized" element={<AuthFailure />} />
+        {/* Protected routes */}
         <Route element={<ProtectedRoute path='/unauthorized' />}>
           <Route path="/settings" element={<Settings />} />
+        </Route>
+        {/* Routes which are only accessible if not logged in */}
+        <Route element={<GuestRoute path='/' />}>
+          <Route path="/login" element={<AuthLogin />} />
+          <Route path="/register" element={<AuthRegister />} />
         </Route>
       </Routes>
     </Router>
