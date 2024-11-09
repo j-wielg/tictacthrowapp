@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.2] - 2024-11-08
+
+### Added
+
+ - User now has the ability to log out
+
+### Changed
+
+ - Removed the unnecessary name form
+ - Moved files around
+
+### Fixed
+
+ - Now check `User.current()?.authenticated()` instead of just `User.current()` to fix a bug which allowed a user to appear logged in without communicating with the database
+ - User can no longer access `/register` and `/login` pages while logged in
+
 
 ## [0.3.1] - 2024-11-03
 

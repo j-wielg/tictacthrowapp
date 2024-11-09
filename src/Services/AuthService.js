@@ -39,3 +39,12 @@ export async function loginUser(username, password) {
 export async function logoutUser() {
   return Parse.User.logOut();
 }
+
+/**
+ * Checks whether or not a user is currently logged in.
+ *
+ * @returns {boolean} Whether or not there is an active user
+ */
+export function isUser() {
+  return Parse.User.current()?.authenticated();
+}
