@@ -2,7 +2,7 @@
 // Essentially the opposite of a protected route
 
 import { Navigate, Outlet } from "react-router-dom";
-import Parse from 'parse';
+import { isUser } from '../../Services/AuthService';
 
 /**
  * Uses react-router-dom to prevent users from accessing certain routes.
@@ -10,7 +10,7 @@ import Parse from 'parse';
  * @param path - The path to redirect to for an unauthorized user
  */
 export default function GuestRoute({path}) {
-  var user = Parse.User.current()?.authenticated();
+  var user = isUser();
 
   return (
     <div>
