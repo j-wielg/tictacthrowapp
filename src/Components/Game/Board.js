@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layer, Group, Text, Circle, Line } from 'react-konva';
+import { Group, Circle, Line } from 'react-konva';
 
 /**
  * Helper function that renders a single grid
