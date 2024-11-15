@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stage, Layer, Group, Text, Circle, Line } from 'react-konva';
+import { Layer, Group, Text, Circle, Line } from 'react-konva';
 
 /**
  * Helper function that renders a single grid
@@ -41,12 +41,18 @@ function Grid({x, y, distance=30}) {
 /**
  * Helper function that renders an empty board
  * @param {number} distance - Distance between gridlines
+ * @param {number} x_off - Offset in the x direction
+ * @param {number} y_off - Offset in the y direction
  */
-function EmptyBoard({distance = 30}) {
+function EmptyBoard({distance = 30, x_off, y_off}) {
   return (
     [0, 4, 8].map((x) => {
       return [0, 4, 8].map((y) => {
-        return <Grid x={x * distance} y={y * distance} distance={distance} key={x + "," + y} />
+        return <Grid 
+          x={x_off + x * distance}
+          y={y_off + y * distance}
+          distance={distance}
+          key={x + "," + y} />
       })
     })
   )
@@ -59,8 +65,10 @@ function EmptyBoard({distance = 30}) {
  * @param {number} pos - Square position of the piece
  * @param {number} space - The space between gridlines
  * @param {number} type - The type of piece (1 for X, 2 for O) 
+ * @param {number} x_off - Offset in the x direction
+ * @param {number} y_off - Offset in the y direction
  */
-function Piece({grid, pos, space, type}) {
+function Piece({grid, pos, space, type, x_off, y_off}) {
   if (type === 0) return;
   var x = ((grid % 3) * space * 4) + ((pos % 3) * space)
   var y = (Math.floor(grid / 3) * space * 4) + (Math.floor(pos / 3) * space)
@@ -69,13 +77,13 @@ function Piece({grid, pos, space, type}) {
     return (
       <Group>
         <Line
-          x={x}
-          y={y}
+          x={x + x_off}
+          y={y + y_off}
           points={[padding, padding, space - padding, space - padding]}
           stroke="red"/>
         <Line
-          x={x}
-          y={y}
+          x={x + x_off}
+          y={y + y_off}
           points={[padding, space - padding, space - padding, padding]}
           stroke="red"/>
       </Group>
@@ -84,8 +92,8 @@ function Piece({grid, pos, space, type}) {
     var radius = Math.floor(space * 0.7 * 0.5)
     return (
       <Circle
-        x={x + space/2}
-        y={y + space/2}
+        x={x + space/2 + x_off}
+        y={y + space/2 + y_off}
         radius={radius}
         stroke="blue" />
     )
@@ -97,17 +105,15 @@ function Piece({grid, pos, space, type}) {
   * Child component of Game which renders the Tic Tac Throw board.
   *
   * @param {Array<number>} pieces An array containing the location of each player's pieces
+  * @param {number} x_off - The x offset of the board
+  * @param {number} size - Distance between gridlines
+  * @param {number} y_off - The y offset of the board
   */
-export function Board(pieces) {
-  pieces = pieces.pieces;
+export function Board({pieces, size=30, x_off=0, y_off=0}) {
   // Prints the default board
   if (!pieces) {
     return (
-      <Stage width={500} height={500}>
-        <Layer>
-          <EmptyBoard />
-        </Layer>
-      </Stage>
+      <EmptyBoard distance={size} x_off={x_off} y_off={y_off} />
     )
   }
 
@@ -122,18 +128,16 @@ export function Board(pieces) {
           pos={pos} 
           space={30}
           type={pieces[grid][pos]}
+          x_off={x_off}
+          y_off={y_off}
           key={grid + "," + pos}/>
       )
     }
   }
   return (
-    <div style={{fontFamily: "monospace"}}>
-      <Stage width={500} height={500}>
-        <Layer>
-          <EmptyBoard distance={30} />
-          {piecesArray}
-        </Layer>
-      </Stage>
-    </div>
+    <Group>
+      <EmptyBoard distance={size} x_off={x_off} y_off={y_off} />
+      {piecesArray}
+    </Group>
   )
 }
