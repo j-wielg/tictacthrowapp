@@ -1,4 +1,5 @@
 import { Board } from './Board';
+import { Stage, Text, Layer } from 'react-konva';
 
 
 /**
@@ -17,9 +18,20 @@ export function Game(gamestate) {
   try {
     return (
       <div>
-        <p>Turn: {gamestate.get("turn")}</p>
-        <p>Player: {convert_player(gamestate.get("player"))}</p>
-        <Board pieces={gamestate.get("board")} />
+        <Stage width={500} height={500}>
+          <Layer>
+            <Text 
+              text={"Turn: " + gamestate.get("turn")}
+              fontSize={16}
+              y={30}/>
+            <Text 
+              text={"Player: " + convert_player(gamestate.get("player"))}
+              fontSize={16}
+              x={250}
+              y={30}/>
+            <Board pieces={gamestate.get("board")} y_off={80} />
+          </Layer>
+        </Stage>
       </div>
     );
   } catch (e) {
