@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0] - 2024-11-18
+
+### Added
+  
+  - The board is now rendered using the `react-konva` package
+
+### Changed
+
+### Fixed
+
 ## [0.3.2] - 2024-11-08
 
 ### Added
