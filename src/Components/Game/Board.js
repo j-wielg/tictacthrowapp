@@ -4,6 +4,7 @@ import { Group, Circle, Line, Rect } from 'react-konva';
 // that don't matter
 var previousPos = {grid: -1, pos: -1}
 
+
 /**
  * Helper function that renders a single grid
  * @param {number} x - The x offset of the grid
@@ -102,7 +103,6 @@ function Piece({grid, pos, space, type, x_off, y_off}) {
     )
   }
 }
-
 
 /**
  * Helper function that converts mouse coordinates into the

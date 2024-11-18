@@ -3,7 +3,6 @@ import { Stage, Text, Layer, Rect } from 'react-konva';
 import { useState } from 'react';
 
 
-
 /**
  * Helper component that renders a green rectangle that shows where the player
  * is allowed to move
@@ -35,8 +34,6 @@ function CurrentGrid({gamestate, config}) {
   />
 
 }
-
-
 
 /**
   * Component that renders the Tic Tac Throw game.
