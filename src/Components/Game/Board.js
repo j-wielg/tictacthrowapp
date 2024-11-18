@@ -1,5 +1,5 @@
 import React from 'react';
-import { Group, Circle, Line } from 'react-konva';
+import { Group, Circle, Line, Rect } from 'react-konva';
 
 /**
  * Helper function that renders a single grid
@@ -102,6 +102,31 @@ function Piece({grid, pos, space, type, x_off, y_off}) {
 
 
 /**
+ * Helper function that converts mouse coordinates into the
+ * (grid, pos) configuration that can interact with tic tac throw.
+ */
+function convertCoords(mousePos, x_off, y_off, size) {
+  let x = Math.floor((mousePos.x - x_off) / size);
+  let y = Math.floor((mousePos.y - y_off) / size);
+  // Eliminates moves to a bad square
+  if (
+    (x === 3 || x === 7 || y === 3 || y === 7) ||
+    (x < 0 || x > 10) ||
+    (y < 0 || y > 10)
+  )
+  {
+    return {grid: -1, pos: -1};
+  }
+  // Normalize x, y to be from 0 to 8
+  x = x - Math.floor(x / 4)
+  y = y - Math.floor(y / 4)
+  // Convert to grid and pos
+  let p = (x % 3) + 3 * (y % 3);
+  let g = (Math.floor(x / 3)) + 3 * (Math.floor(y / 3));
+  return {grid: g, pos: p};
+}
+
+/**
   * Child component of Game which renders the Tic Tac Throw board.
   *
   * @param {Array<number>} pieces An array containing the location of each player's pieces
@@ -109,7 +134,38 @@ function Piece({grid, pos, space, type, x_off, y_off}) {
   * @param {number} size - Distance between gridlines
   * @param {number} y_off - The y offset of the board
   */
-export function Board({pieces, size=30, x_off=0, y_off=0}) {
+export function Board({pieces, size=30, x_off=0, y_off=0, ...rest}) {
+  var previousPos = {grid: -1, pos: -1};
+  // Creates a default hover handler if one isn't provided
+  if (rest.hoverHandler === undefined) {
+    rest.hoverHandler = (g, p) => {
+      console.log('Registered hover:', g, ',', p);
+    }
+  }
+  // Creates a default click handler if one isn't provided
+  if (rest.clickHandler === undefined) {
+    rest.clickHandler = (g, p) => {
+      console.log('Registered click:', g, ',', p);
+    }
+  }
+  // Converts mouse position to (grid, pos) format, and then calls the
+  // external hover handler if the coordinates have changed from the last
+  // call
+  const moveHandler = (e) => {
+    const mousePos = e.target.getStage().getPointerPosition();
+    var newPos = convertCoords(mousePos, x_off, y_off, size);
+    if (newPos.grid !== previousPos.grid || newPos.pos !== previousPos.pos) {
+      previousPos = newPos;
+      rest.hoverHandler(newPos.grid, newPos.pos);
+    }
+  }
+  // Converts mouse position to (grid, pos) format, and calls the external
+  // click handler
+  const clickHandler = (e) => {
+    const mousePos = e.target.getStage().getPointerPosition();
+    var newPos = convertCoords(mousePos, x_off, y_off, size);
+    rest.clickHandler(newPos.grid, newPos.pos);
+  }
   // Prints the default board
   if (!pieces) {
     return (
@@ -138,6 +194,14 @@ export function Board({pieces, size=30, x_off=0, y_off=0}) {
     <Group>
       <EmptyBoard distance={size} x_off={x_off} y_off={y_off} />
       {piecesArray}
+      <Rect
+        x={x_off}
+        y={y_off}
+        width={11 * size}
+        height={11 * size}
+        onMouseMove={moveHandler}
+        onClick={clickHandler}
+        />
     </Group>
   )
 }
