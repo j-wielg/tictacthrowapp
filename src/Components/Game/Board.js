@@ -1,5 +1,8 @@
-import React from 'react';
 import { Group, Circle, Line, Rect } from 'react-konva';
+
+// Stores the previous cursor position. Used to filter out mouse events
+// that don't matter
+var previousPos = {grid: -1, pos: -1}
 
 /**
  * Helper function that renders a single grid
@@ -135,7 +138,6 @@ function convertCoords(mousePos, x_off, y_off, size) {
   * @param {number} y_off - The y offset of the board
   */
 export function Board({pieces, size=30, x_off=0, y_off=0, ...rest}) {
-  var previousPos = {grid: -1, pos: -1};
   // Creates a default hover handler if one isn't provided
   if (rest.hoverHandler === undefined) {
     rest.hoverHandler = (g, p) => {
