@@ -130,4 +130,22 @@ impl TicTacThrow {
         let last_grid = self.past_state[self.turn - 1].1 as usize;
         return num_open == 8 || (last_grid != pos);
     }
+
+    /// Returns all valid moves for a given grid
+    pub fn get_valid_moves(&self, grid: usize) -> Vec<usize> {
+        if !(self.free || self.grid == grid) {
+            return vec![];
+        }
+        let last_grid = self.past_state[self.turn - 1].1 as usize;
+        let mut valid_moves: Vec<usize> = (0..9)
+            .filter(|pos| *pos != last_grid)
+            .filter(|pos| self.board[grid][*pos] == 0)
+            .collect();
+        if self.free || valid_moves.len() == 1 {
+            if self.board[grid][last_grid] == 0 {
+                valid_moves.push(last_grid);
+            }
+        }
+        valid_moves
+    }
 }
