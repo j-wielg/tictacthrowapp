@@ -20,3 +20,9 @@ fn it_checks_turn0_valid_moves() {
     assert!(!ttt.is_valid_move(3, 4), "Failed to prevent turn 0 center move");
     assert!(!ttt.is_valid_move(3, 3), "Failed to prevent turn 0 self-square");
 }
+
+#[test]
+fn it_finds_valid_moves() {
+    let ttt = TicTacThrow::new();
+    assert_eq!(ttt.get_valid_moves(4), vec![0, 1, 2, 3, 5, 6, 7, 8]);
+}
