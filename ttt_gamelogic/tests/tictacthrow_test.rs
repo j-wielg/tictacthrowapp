@@ -10,3 +10,13 @@ fn it_converts_to_json() {
     let expected = expected.trim();
     assert_eq!(string, expected);
 }
+
+#[test]
+fn it_checks_turn0_valid_moves() {
+    let ttt = TicTacThrow::new();
+    assert!(ttt.is_valid_move(0, 1), "Incorrectly flagged a valid move");
+    assert!(ttt.is_valid_move(3, 5), "Incorrectly flagged a valid move");
+    assert!(!ttt.is_valid_move(4, 4), "Failed to check for existing piece");
+    assert!(!ttt.is_valid_move(3, 4), "Failed to prevent turn 0 center move");
+    assert!(!ttt.is_valid_move(3, 3), "Failed to prevent turn 0 self-square");
+}
