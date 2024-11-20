@@ -1,5 +1,6 @@
 mod utils;
 mod tictacthrow;
+pub use tictacthrow::TicTacThrow;
 
 use wasm_bindgen::prelude::*;
 
