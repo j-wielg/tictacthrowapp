@@ -148,4 +148,71 @@ impl TicTacThrow {
         }
         valid_moves
     }
+
+    /// Updates the board with the coordinate of a move
+    /// WARNING: For performance, this does not check that the move is valid.
+    /// Make sure to run `is_valid_move` before this function
+    pub fn update(&mut self, grid: usize, pos: usize) {
+        // Records the move being made
+        self.past_state[self.turn] = (self.free, grid as u8, pos as u8);
+        // Updates the board
+        self.board[grid][pos] = self.player as i8;
+        // If the grid is still contested, check for a three-in-a-row
+        if self.owned[grid] == 0 && self.check_for_three(grid) {
+            self.owned[grid] = self.player as i8;
+            self.contested -= 1;
+        }
+        // Check if the grid just played in is now full
+        let num_pieces: i8 = self.board[grid].iter()
+            .map(|x| if *x >= 0 {*x} else {-x})
+            .sum();
+        if num_pieces == 9 {
+            self.full[grid] = true;
+            // If no one owns the now-full grid, mark it as uncontested
+            if self.owned[grid] == 0 {
+                self.contested -= 1;
+            }
+        }
+        // Switch players
+        self.player *= -1;
+        // Update grid
+        self.grid = pos;
+        // Increment turn
+        self.turn += 1;
+        // Check if next move is free
+        self.free = self.full[self.grid];
+    }
+
+    /// Checks if there is a three-in-a-row in a given grid
+    pub fn check_for_three(&self, grid: usize) -> bool {
+        // Checks vertical and horizontal threes
+        for i in 0..3 {
+            if (self.board[grid][i    ] + 
+                self.board[grid][i + 3] + 
+                self.board[grid][i + 6]) as isize == self.player * 3
+            {
+                return true;
+            }
+            if (self.board[grid][3*i    ] + 
+                self.board[grid][3*i + 1] + 
+                self.board[grid][3*i + 2]) as isize == self.player * 3
+            {
+                return true;
+            }
+        }
+        // Checks the diagonals
+        if (self.board[grid][0] + 
+            self.board[grid][4] + 
+            self.board[grid][8]) as isize == self.player * 3
+        {
+            return true;
+        }
+        if (self.board[grid][2] + 
+            self.board[grid][4] + 
+            self.board[grid][6]) as isize == self.player * 3
+        {
+            return true;
+        }
+        return false;
+    }
 }
