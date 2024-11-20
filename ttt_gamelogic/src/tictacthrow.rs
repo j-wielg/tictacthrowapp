@@ -136,13 +136,15 @@ impl TicTacThrow {
         if !(self.free || self.grid == grid) {
             return vec![];
         }
-        let last_grid = self.past_state[self.turn - 1].1 as usize;
+        let last_grid = if self.turn > 0 {
+            self.past_state[self.turn - 1].1 as usize
+        } else { 9 };
         let mut valid_moves: Vec<usize> = (0..9)
             .filter(|pos| *pos != last_grid)
             .filter(|pos| self.board[grid][*pos] == 0)
             .collect();
         if self.free || valid_moves.len() == 1 {
-            if self.board[grid][last_grid] == 0 {
+            if self.turn > 0 && self.board[grid][last_grid] == 0 {
                 valid_moves.push(last_grid);
             }
         }
