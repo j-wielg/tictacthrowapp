@@ -1,32 +1,52 @@
 use wasm_bindgen::prelude::*;
 
 
-/// A struct representing the standard Tic Tac Throw ruleset
 #[wasm_bindgen]
+#[derive(Clone)]
+/// Represents a single move in a game of tic-tac-throw
+pub struct Move {
+    pub free : bool,
+    pub grid : u8,
+    pub pos : u8,
+}
+
+impl Move {
+    pub fn new(free: bool, grid: u8, pos: u8) -> Move {
+        if grid > 8 || pos > 8 {
+            panic!("Invalid arguments for new move");
+        }
+        Move {free, grid, pos}
+    }
+}
+
+/// A struct representing the standard Tic Tac Throw ruleset
+/// Most fields can be directly set and read by JS. The exception is
+/// `board`, which requires a getter.
+#[wasm_bindgen(getter_with_clone)]
 pub struct TicTacThrow {
     /// The pieces on the board
     board: [[i8; 9]; 9],
     /// Stores the owner of each grid
-    owned: [i8; 9],
+    pub owned: Vec<i8>,
     /// Stores whether each grid is full
-    full: [bool; 9],
+    pub full: Vec<u8>,
     /// Stores whether or not the game is "free"
-    free: bool,
+    pub free: bool,
     /// Stores the number of un-owned grids
-    contested: usize,
+    pub contested: usize,
     /// Stores the current playable grid
-    grid: usize,
+    pub grid: usize,
     /// Stores whose turn it is (1 for p1, -1 for p2)
-    player: isize,
+    pub player: isize,
     /// Stores how many turns have passed
-    turn: usize,
+    pub turn: usize,
     /// Stores the past moves that have been made
-    past_state: [(bool, u8, u8); 81],
+    pub past_state: Vec<Move>,
 }
 
 #[wasm_bindgen]
 impl TicTacThrow {
-    /// Converts the board to JSON format to send over the network
+    /// Converts the board to JSON format
     pub fn jsonify(&self) -> String {
         let mut json = "{\n  \"board\" : [\n".to_string();
         // Handle grids 0-7 in the board
@@ -47,13 +67,13 @@ impl TicTacThrow {
             );
         }
         // Handle owned and full
-        let mut full_str = format!("\"full\" : [{}", self.full[0]).to_string();
+        let mut full_str = format!("\"full\" : [{}", self.full[0] != 0).to_string();
         json.push_str(
             format!("]\n  ],\n  \"owned\" : [{}", self.owned[0]).as_str()
         );
         for grid in 1..9 {
             json.push_str(format!(", {}", self.owned[grid]).as_str());
-            full_str.push_str(format!(", {}", self.full[grid]).as_str());
+            full_str.push_str(format!(", {}", (self.full[grid] != 0)).as_str());
         }
         json.push_str(format!("],\n  {}],", full_str).as_str());
         json.push_str(format!("
@@ -70,13 +90,13 @@ impl TicTacThrow {
             for i in 0..(self.turn-1) {
                 json.push_str(format!(
                     "    [{}, {}, {}],\n",
-                    self.past_state[i].0, self.past_state[i].1, self.past_state[i].2
+                    self.past_state[i].free, self.past_state[i].grid, self.past_state[i].pos
                 ).as_str());
             }
             let i = self.turn - 1;
             json.push_str(format!(
                 "    [{}, {}, {}]\n  ]\n",
-                self.past_state[i].0, self.past_state[i].1, self.past_state[i].2
+                self.past_state[i].free, self.past_state[i].grid, self.past_state[i].pos
             ).as_str());
             json.push('}');
         }
@@ -97,14 +117,14 @@ impl TicTacThrow {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
             ],
-            owned: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            full: [false, false, false, false, false, false, false, false, false],
+            owned: vec![0, 0, 0, 0, 0, 0, 0, 0, 0],
+            full: vec![0, 0, 0, 0, 0, 0, 0, 0, 0],
             free: true,
             contested: 9,
             grid: 4,
             player: -1,
             turn: 0,
-            past_state: [(false, 0, 0); 81]
+            past_state: Vec::with_capacity(81)
         }
     }
 
@@ -127,7 +147,7 @@ impl TicTacThrow {
         let num_open: i8 = self.board[grid].iter()
             .map(|x| if *x >= 0 {*x} else {-x})
             .sum();
-        let last_grid = self.past_state[self.turn - 1].1 as usize;
+        let last_grid = self.past_state[self.turn - 1].grid as usize;
         return num_open == 8 || (last_grid != pos);
     }
 
@@ -142,7 +162,7 @@ impl TicTacThrow {
                 .collect();
             return valid_moves;
         }
-        let last_grid = self.past_state[self.turn - 1].1 as usize;
+        let last_grid = self.past_state[self.turn - 1].grid as usize;
         let mut valid_moves: Vec<usize> = (0..9)
             .filter(|pos| *pos != last_grid)
             .filter(|pos| self.board[grid][*pos] == 0)
@@ -160,7 +180,11 @@ impl TicTacThrow {
     /// Make sure to run `is_valid_move` before this function
     pub fn update(&mut self, grid: usize, pos: usize) {
         // Records the move being made
-        self.past_state[self.turn] = (self.free, grid as u8, pos as u8);
+        self.past_state.push(Move{
+            free: self.free, 
+            grid: grid as u8, 
+            pos: pos as u8
+        });
         // Updates the board
         self.board[grid][pos] = self.player as i8;
         // If the grid is still contested, check for a three-in-a-row
@@ -173,7 +197,7 @@ impl TicTacThrow {
             .map(|x| if *x >= 0 {*x} else {-x})
             .sum();
         if num_pieces == 9 {
-            self.full[grid] = true;
+            self.full[grid] = 1;
             // If no one owns the now-full grid, mark it as uncontested
             if self.owned[grid] == 0 {
                 self.contested -= 1;
@@ -186,7 +210,7 @@ impl TicTacThrow {
         // Increment turn
         self.turn += 1;
         // Check if next move is free
-        self.free = self.full[self.grid];
+        self.free = self.full[self.grid] != 0;
     }
 
     /// Checks if there is a three-in-a-row in a given grid
