@@ -1,0 +1,18 @@
+{
+  "name": "ttt_gamelogic",
+  "type": "module",
+  "collaborators": [
+    "j-wielg <jwielgus@nd.edu>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "ttt_gamelogic_bg.wasm",
+    "ttt_gamelogic.js",
+    "ttt_gamelogic.d.ts"
+  ],
+  "main": "ttt_gamelogic.js",
+  "types": "ttt_gamelogic.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

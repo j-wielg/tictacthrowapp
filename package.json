@@ -14,6 +14,7 @@
     "react-konva": "^18.2.10",
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
+    "ttt_gamelogic": "file:ttt_gamelogic/pkg",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
