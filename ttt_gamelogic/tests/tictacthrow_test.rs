@@ -53,3 +53,14 @@ fn it_updates_correctly() {
     let expected = expected.trim();
     assert_eq!(ttt.jsonify(), expected);
 }
+
+#[test]
+fn it_gets_the_board() {
+    let mut ttt = TicTacThrow::new();
+    assert_eq!(ttt.get_board_by_grid(4), vec![0, 0, 0, 0, 1, 0, 0, 0, 0]);
+    ttt.update(2, 0);
+    assert_eq!(ttt.get_board_by_grid(2), vec![-1, 0, 0, 0, 0, 0, 0, 0, 0]);
+    ttt.update(0, 4);
+    ttt.update(4, 1);
+    assert_eq!(ttt.get_board_by_grid(4), vec![0, -1, 0, 0, 1, 0, 0, 0, 0]);
+}
