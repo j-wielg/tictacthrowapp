@@ -2,13 +2,13 @@ import './App.css';
 import * as ENV from "./environments";
 import Parse from 'parse';
 import Components from './Components/Components'
+import initWasm from 'ttt_gamelogic';
 
 // Starts parse
 Parse.initialize(ENV.APPLICATION_ID, ENV.JAVASCRIPT_KEY);
 Parse.serverURL = ENV.SERVER_URL;
-// Tells parse that it's OK to cache the current user
-// By default this is blocked in React
-// Parse.User.enableUnsafeCurrentUser();
+// Starts the WASM vm
+await initWasm();
 
 /**
   * The main entry point for the React web application
