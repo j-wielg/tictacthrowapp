@@ -103,6 +103,12 @@ impl TicTacThrow {
         return json;
     }
 
+    /// Returns the state of the board for a single grid.
+    /// Used to interface with javascript
+    pub fn get_board_by_grid(&self, grid: usize) -> Vec<i8> {
+        self.board[grid].to_vec()
+    }
+
     /// Generates an empty board object
     pub fn new() -> TicTacThrow {
         TicTacThrow {
