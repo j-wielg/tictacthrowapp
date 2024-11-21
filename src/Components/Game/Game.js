@@ -1,19 +1,21 @@
 import { Board } from './Board';
 import { Stage, Text, Layer, Rect } from 'react-konva';
 import { useState } from 'react';
+import { TicTacThrow } from 'ttt_gamelogic';
 
 
 /**
  * Helper component that renders a green rectangle that shows where the player
  * is allowed to move
  *
- * @param gamestate - The gamestate object received from Parse
- * @param config - An object that configures the rendering of the board
+ * @param {object} props
+ * @param {TicTacThrow} props.gamestate - The gamestate object received from Parse
+ * @param {object} props.config - An object that configures the rendering of the board
  */
 function CurrentGrid({gamestate, config}) {
   const color = "rgba(50, 200, 50, 1)"
   // Handles the case where the game is free
-  if (gamestate.get("free")) {
+  if (gamestate.free) {
     return <Rect
       x={config.x_off - 0.5 * config.size}
       y={config.y_off - 0.5 * config.size}
@@ -22,7 +24,7 @@ function CurrentGrid({gamestate, config}) {
       stroke={color}
     />
   }
-  var grid = gamestate.get("grid");
+  var grid = gamestate.grid;
   var x = 4 * (grid % 3) * config.size;
   var y = 4 * Math.floor(grid / 3) * config.size;
   return <Rect
@@ -38,7 +40,8 @@ function CurrentGrid({gamestate, config}) {
 /**
   * Component that renders the Tic Tac Throw game.
   *
-  * @param {Object} gamestate A gameState object fetched using Parse.
+  * @param {object} props
+  * @param {TicTacThrow} props.gamestate A gameState object fetched using Parse.
   */
 export function Game({gamestate}) {
   // State
@@ -61,7 +64,7 @@ export function Game({gamestate}) {
   // Runs the hover handler
   const hoverHandler = (grid, pos) => {
     // Handles bad placements
-    if (grid === -1 || gamestate.get("board")[grid][pos] !== 0) {
+    if (grid === -1) {
       setHoverSquare({...hoverSquare, render: false});
       return;
     }
@@ -79,16 +82,16 @@ export function Game({gamestate}) {
           <Layer>
             <CurrentGrid gamestate={gamestate} config={renderConfig} />
             <Text 
-              text={"Turn: " + gamestate.get("turn")}
+              text={"Turn: " + gamestate.turn}
               fontSize={16}
               y={30}/>
             <Text 
-              text={"Player: " + convert_player(gamestate.get("player"))}
+              text={"Player: " + convert_player(gamestate.player)}
               fontSize={16}
               x={250}
               y={30}/>
             <Board 
-              pieces={gamestate.get("board")}
+              gamestate={gamestate}
               hoverHandler={hoverHandler}
               {...renderConfig}
             />

@@ -1,4 +1,5 @@
 import { Group, Circle, Line, Rect } from 'react-konva';
+import { TicTacThrow } from 'ttt_gamelogic';
 
 // Stores the previous cursor position. Used to filter out mouse events
 // that don't matter
@@ -132,12 +133,13 @@ function convertCoords(mousePos, x_off, y_off, size) {
 /**
   * Child component of Game which renders the Tic Tac Throw board.
   *
-  * @param {Array<number>} pieces An array containing the location of each player's pieces
-  * @param {number} x_off - The x offset of the board
-  * @param {number} size - Distance between gridlines
-  * @param {number} y_off - The y offset of the board
+  * @param {object} props
+  * @param {TicTacThrow} props.gamestate - The state of the game
+  * @param {number} props.x_off - The x offset of the board
+  * @param {number} props.size - Distance between gridlines
+  * @param {number} props.y_off - The y offset of the board
   */
-export function Board({pieces, size=30, x_off=0, y_off=0, ...rest}) {
+export function Board({gamestate, size=30, x_off=0, y_off=0, ...rest}) {
   // Creates a default hover handler if one isn't provided
   if (rest.hoverHandler === undefined) {
     rest.hoverHandler = (g, p) => {
@@ -169,7 +171,7 @@ export function Board({pieces, size=30, x_off=0, y_off=0, ...rest}) {
     rest.clickHandler(newPos.grid, newPos.pos);
   }
   // Prints the default board
-  if (!pieces) {
+  if (gamestate === undefined) {
     return (
       <EmptyBoard distance={size} x_off={x_off} y_off={y_off} />
     )
@@ -178,14 +180,15 @@ export function Board({pieces, size=30, x_off=0, y_off=0, ...rest}) {
   // Returns a GUI representation of the gamestate
   var piecesArray = [];
   for (let grid=0; grid < 9; grid++) {
+    var grid_pieces = gamestate.get_board_by_grid(grid);
     for (let pos=0; pos < 9; pos++) {
-      if (pieces[grid][pos] === 0) continue;
+      if (grid_pieces[pos] === 0) continue;
       piecesArray.push(
         <Piece
           grid={grid}
           pos={pos} 
           space={30}
-          type={pieces[grid][pos]}
+          type={grid_pieces[pos]}
           x_off={x_off}
           y_off={y_off}
           key={grid + "," + pos}/>
