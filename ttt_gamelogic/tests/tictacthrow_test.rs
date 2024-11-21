@@ -23,8 +23,17 @@ fn it_checks_turn0_valid_moves() {
 
 #[test]
 fn it_finds_valid_moves() {
-    let ttt = TicTacThrow::new();
+    let mut ttt = TicTacThrow::new();
+    // Checks if it skips squares which are already chosen
     assert_eq!(ttt.get_valid_moves(4), vec![0, 1, 2, 3, 5, 6, 7, 8]);
+    assert_eq!(ttt.get_valid_moves(0), vec![1, 2, 3, 5, 6, 7, 8], 
+        "Fails to account for turn 0 weirdness");
+    // Checks if it prevents the opponent from playing the same grid twice
+    ttt.update(0, 8);
+    assert_eq!(ttt.get_valid_moves(0), vec![], 
+        "Fails to return [] if grid != self.grid");
+    assert_eq!(ttt.get_valid_moves(8), vec![1, 2, 3, 4, 5, 6, 7, 8],
+        "Fails to avoid double grid");
 }
 
 #[test]
