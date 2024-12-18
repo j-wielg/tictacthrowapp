@@ -93,12 +93,14 @@ export function Game({gamestate}) {
             <Text 
               text={"Turn: " + gamestate.turn}
               fontSize={16}
-              y={30}/>
+              y={-40 + renderConfig.y_off}
+              x={0 + renderConfig.x_off}
+            />
             <Text 
               text={"Player: " + convert_player(gamestate.player)}
               fontSize={16}
-              x={250}
-              y={30}/>
+              x={250 + renderConfig.x_off}
+              y={-40 + renderConfig.y_off}/>
             <Board 
               gamestate={gamestate}
               hoverHandler={hoverHandler}
