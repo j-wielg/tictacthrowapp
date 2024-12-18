@@ -105,6 +105,20 @@ function Piece({grid, pos, space, type, x_off, y_off}) {
   }
 }
 
+function OwnerOutline({grid, type, space, x_off, y_off}) {
+  if (type === 0) return;
+  var x = (grid % 3) * space * 4;
+  var y = Math.floor(grid / 3) * space * 4;
+  var color = (type === 1) ? "red" : "blue";
+  return (<Rect
+    x={x + x_off}
+    y={y + y_off}
+    stroke={color}
+    width={space * 3}
+    height={space * 3}
+  />);
+}
+
 /**
  * Helper function that converts mouse coordinates into the
  * (grid, pos) configuration that can interact with tic tac throw.
@@ -179,15 +193,30 @@ export function Board({gamestate, size=30, x_off=0, y_off=0, ...rest}) {
 
   // Returns a GUI representation of the gamestate
   var piecesArray = [];
+  var ownerArray = [];
   for (let grid=0; grid < 9; grid++) {
     var grid_pieces = gamestate.get_board_by_grid(grid);
+    var owner = gamestate.owned[grid];
+    if (owner !== 0) {
+      console.log('new owner');
+      ownerArray.push(
+        <OwnerOutline
+          grid={grid}
+          type={owner}
+          space={size}
+          x_off={x_off}
+          y_off={y_off}
+          key={grid}
+          />
+      )
+    }
     for (let pos=0; pos < 9; pos++) {
       if (grid_pieces[pos] === 0) continue;
       piecesArray.push(
         <Piece
           grid={grid}
           pos={pos} 
-          space={30}
+          space={size}
           type={grid_pieces[pos]}
           x_off={x_off}
           y_off={y_off}
@@ -199,6 +228,7 @@ export function Board({gamestate, size=30, x_off=0, y_off=0, ...rest}) {
     <Group>
       <EmptyBoard distance={size} x_off={x_off} y_off={y_off} />
       {piecesArray}
+      {ownerArray}
       <Rect
         x={x_off}
         y={y_off}

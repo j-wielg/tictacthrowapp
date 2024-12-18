@@ -64,7 +64,7 @@ export function Game({gamestate}) {
   // Runs the hover handler
   const hoverHandler = (grid, pos) => {
     // Handles bad placements
-    if (grid === -1) {
+    if (grid === -1 || !gamestate.is_valid_move(grid, pos)) {
       setHoverSquare({...hoverSquare, render: false});
       return;
     }
@@ -73,6 +73,15 @@ export function Game({gamestate}) {
     x += Math.floor(x / 3);
     y += Math.floor(y / 3);
     setHoverSquare({x: x * renderConfig.size, y: y * renderConfig.size, render: true});
+  }
+  // Runs the click handler
+  const clickHandler = (grid, pos) => {
+    if (grid === -1) {
+      return;
+    } else if (gamestate.is_valid_move(grid, pos)) {
+      gamestate.update(grid, pos);
+    }
+    console.log('clicked');
   }
 
   try {
@@ -93,6 +102,7 @@ export function Game({gamestate}) {
             <Board 
               gamestate={gamestate}
               hoverHandler={hoverHandler}
+              clickHandler={clickHandler}
               {...renderConfig}
             />
             <Rect
