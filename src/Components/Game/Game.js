@@ -1,7 +1,8 @@
-import { Board } from './Board';
+import { Board, Piece } from './Board';
 import { Group, Stage, Text, Layer, Rect } from 'react-konva';
 import { useState } from 'react';
 import { TicTacThrow } from 'ttt_gamelogic';
+import { render } from '@testing-library/react';
 
 
 /**
@@ -14,6 +15,10 @@ import { TicTacThrow } from 'ttt_gamelogic';
  */
 function CurrentGrid({gamestate, config}) {
   const color = "rgba(50, 200, 50, 1)"
+  // Handles the case where the game is over
+  if (!gamestate.active) {
+    return;
+  }
   // Handles the case where the game is free
   if (gamestate.free) {
     return <Rect
@@ -146,14 +151,22 @@ export function Game({gamestate}) {
             <Text 
               text={"Turn: " + gamestate.turn}
               fontSize={16}
-              y={-40 + renderConfig.y_off}
+              y={-52 + renderConfig.y_off}
               x={0 + renderConfig.x_off}
             />
             <Text 
-              text={"Player: " + convert_player(gamestate.player)}
+              text={"Player: "}
               fontSize={16}
               x={250 + renderConfig.x_off}
-              y={-40 + renderConfig.y_off}/>
+              y={-52 + renderConfig.y_off}/>
+            <Piece
+              grid={2}
+              pos={2}
+              space={renderConfig.size}
+              type={gamestate.player}
+              x_off={renderConfig.x_off}
+              y_off={renderConfig.y_off - 2*renderConfig.size}
+            />
             <Board 
               gamestate={gamestate}
               hoverHandler={hoverHandler}

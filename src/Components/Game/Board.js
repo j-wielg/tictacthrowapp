@@ -73,7 +73,7 @@ function EmptyBoard({distance = 30, x_off, y_off}) {
  * @param {number} x_off - Offset in the x direction
  * @param {number} y_off - Offset in the y direction
  */
-function Piece({grid, pos, space, type, x_off, y_off}) {
+export function Piece({grid, pos, space, type, x_off, y_off}) {
   if (type === 0) return;
   var x = ((grid % 3) * space * 4) + ((pos % 3) * space)
   var y = (Math.floor(grid / 3) * space * 4) + (Math.floor(pos / 3) * space)
