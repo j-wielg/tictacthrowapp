@@ -40,6 +40,10 @@ pub struct TicTacThrow {
     pub player: isize,
     /// Stores how many turns have passed
     pub turn: usize,
+    /// Stores which player has won
+    pub winner: isize,
+    /// Determines whether or not the game is still running
+    pub active: bool,
     /// Stores the past moves that have been made
     pub past_state: Vec<Move>,
 }
@@ -82,7 +86,10 @@ impl TicTacThrow {
   \"grid\" : {},
   \"player\" : {},
   \"turn\" : {},
-", self.free, self.contested, self.grid, self.player, self.turn).as_str());
+  \"winner\" : {},
+  \"active\" : {},
+", self.free, self.contested, self.grid, self.player, 
+self.turn, self.winner, self.active).as_str());
         if self.turn == 0 {
             json.push_str("  \"past_state\" : []\n}");
         } else {
@@ -130,12 +137,18 @@ impl TicTacThrow {
             grid: 4,
             player: -1,
             turn: 0,
+            winner: 0,
+            active: true,
             past_state: Vec::with_capacity(81)
         }
     }
 
     /// Determines whether a given move is valid or not
     pub fn is_valid_move(&self, grid: usize, pos: usize) -> bool {
+        // Returns false if the game is over
+        if !self.active {
+            return false;
+        }
         // Checks whether or not a piece already occupies that position
         if self.board[grid][pos] != 0 {
             return false;
@@ -159,6 +172,9 @@ impl TicTacThrow {
 
     /// Returns all valid moves for a given grid
     pub fn get_valid_moves(&self, grid: usize) -> Vec<usize> {
+        if !self.active {
+            return vec![];
+        }
         if !(self.free || self.grid == grid) {
             return vec![];
         } else if self.turn == 0 {
@@ -185,6 +201,10 @@ impl TicTacThrow {
     /// WARNING: For performance, this does not check that the move is valid.
     /// Make sure to run `is_valid_move` before this function
     pub fn update(&mut self, grid: usize, pos: usize) {
+        // Returns if the game is over
+        if !self.active {
+            return;
+        }
         // Records the move being made
         self.past_state.push(Move{
             free: self.free, 
@@ -197,6 +217,12 @@ impl TicTacThrow {
         if self.owned[grid] == 0 && self.check_for_three(grid) {
             self.owned[grid] = self.player as i8;
             self.contested -= 1;
+            // Check if either player has just won
+            let score: isize = self.owned.iter().sum::<i8>() as isize;
+            if score * self.player > self.contested as isize {
+                self.winner = self.player;
+                self.active = false;
+            }
         }
         // Check if the grid just played in is now full
         let num_pieces: i8 = self.board[grid].iter()
@@ -207,6 +233,18 @@ impl TicTacThrow {
             // If no one owns the now-full grid, mark it as uncontested
             if self.owned[grid] == 0 {
                 self.contested -= 1;
+            }
+            // If there are no more contested grids, get the winner
+            if self.contested == 0 {
+                self.active = false;
+                let score: isize = self.owned.iter().sum::<i8>() as isize;
+                if score > 0 {
+                    self.winner = 1;
+                } else if score < 0 {
+                    self.winner = -1;
+                } else {
+                    self.winner = 0;
+                }
             }
         }
         // Switch players
