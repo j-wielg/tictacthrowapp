@@ -1,5 +1,5 @@
 import { Board } from './Board';
-import { Stage, Text, Layer, Rect } from 'react-konva';
+import { Group, Stage, Text, Layer, Rect } from 'react-konva';
 import { useState } from 'react';
 import { TicTacThrow } from 'ttt_gamelogic';
 
@@ -36,6 +36,59 @@ function CurrentGrid({gamestate, config}) {
   />
 
 }
+
+/**
+ * Helper component that renders a game over screen.
+ *
+ * @param {object} props
+ * @param {TicTacThrow} props.gamestate - The gamestate object received from Parse
+ * @param {object} props.config - An object that configures the rendering of the board
+ */
+function GameOver({gamestate, config}) {
+  if (gamestate.active) {
+    return;
+  }
+  var wintext = "It's a tie";
+  if (gamestate.winner === 1) {
+    wintext = "Player 1 wins!";
+  } else if (gamestate.winner === -1) {
+    wintext = "Player 2 wins!";
+  }
+  return (
+    <Group>
+      <Rect 
+        x={config.x_off - config.size/2}
+        y={config.y_off - config.size/2}
+        width={12 * config.size}
+        height={12 * config.size}
+        fill={"rgba(0, 0, 0, 0.5)"}
+      />
+      <Text 
+        align="center"
+        text={"Game Over"}
+        fontSize={40}
+        y={config.y_off + config.size * 2.8}
+        x={config.x_off}
+        width={11 * config.size}
+        fill="white"
+        stroke="black"
+        strokeWidth={1}
+      />
+      <Text 
+        align="center"
+        text={wintext}
+        fontSize={35}
+        y={config.y_off + config.size * 6.8}
+        x={config.x_off}
+        width={11 * config.size}
+        fill="white"
+        stroke="black"
+        strokeWidth={1}
+      />
+    </Group>
+  )
+}
+
 
 /**
   * Component that renders the Tic Tac Throw game.
@@ -116,6 +169,7 @@ export function Game({gamestate}) {
               opacity={(hoverSquare.render) ? 1 : 0}
               listening={false}
             />
+            <GameOver gamestate={gamestate} config={renderConfig} />
           </Layer>
         </Stage>
       </div>
