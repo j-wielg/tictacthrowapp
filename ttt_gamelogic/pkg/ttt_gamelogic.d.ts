@@ -62,6 +62,10 @@ export class TicTacThrow {
    */
   check_for_three(grid: number): boolean;
 /**
+ * Determines whether or not the game is still running
+ */
+  active: boolean;
+/**
  * Stores the number of un-owned grids
  */
   contested: number;
@@ -93,6 +97,10 @@ export class TicTacThrow {
  * Stores how many turns have passed
  */
   turn: number;
+/**
+ * Stores which player has won
+ */
+  winner: number;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -121,6 +129,10 @@ export interface InitOutput {
   readonly __wbg_set_tictacthrow_player: (a: number, b: number) => void;
   readonly __wbg_get_tictacthrow_turn: (a: number) => number;
   readonly __wbg_set_tictacthrow_turn: (a: number, b: number) => void;
+  readonly __wbg_get_tictacthrow_winner: (a: number) => number;
+  readonly __wbg_set_tictacthrow_winner: (a: number, b: number) => void;
+  readonly __wbg_get_tictacthrow_active: (a: number) => number;
+  readonly __wbg_set_tictacthrow_active: (a: number, b: number) => void;
   readonly __wbg_get_tictacthrow_past_state: (a: number) => Array;
   readonly __wbg_set_tictacthrow_past_state: (a: number, b: number, c: number) => void;
   readonly tictacthrow_jsonify: (a: number) => Array;

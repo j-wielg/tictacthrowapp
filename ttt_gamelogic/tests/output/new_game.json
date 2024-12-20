@@ -17,5 +17,7 @@
   "grid" : 4,
   "player" : -1,
   "turn" : 0,
+  "winner" : 0,
+  "active" : true,
   "past_state" : []
 }

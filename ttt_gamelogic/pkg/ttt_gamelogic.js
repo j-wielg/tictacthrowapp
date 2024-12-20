@@ -318,6 +318,36 @@ export class TicTacThrow {
         wasm.__wbg_set_tictacthrow_turn(this.__wbg_ptr, arg0);
     }
     /**
+     * Stores which player has won
+     * @returns {number}
+     */
+    get winner() {
+        const ret = wasm.__wbg_get_tictacthrow_winner(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * Stores which player has won
+     * @param {number} arg0
+     */
+    set winner(arg0) {
+        wasm.__wbg_set_tictacthrow_winner(this.__wbg_ptr, arg0);
+    }
+    /**
+     * Determines whether or not the game is still running
+     * @returns {boolean}
+     */
+    get active() {
+        const ret = wasm.__wbg_get_tictacthrow_active(this.__wbg_ptr);
+        return ret !== 0;
+    }
+    /**
+     * Determines whether or not the game is still running
+     * @param {boolean} arg0
+     */
+    set active(arg0) {
+        wasm.__wbg_set_tictacthrow_active(this.__wbg_ptr, arg0);
+    }
+    /**
      * Stores the past moves that have been made
      * @returns {(Move)[]}
      */

@@ -1,80 +1,242 @@
+import { Group, Circle, Line, Rect } from 'react-konva';
+import { TicTacThrow } from 'ttt_gamelogic';
+
+// Stores the previous cursor position. Used to filter out mouse events
+// that don't matter
+var previousPos = {grid: -1, pos: -1}
+
+
+/**
+ * Helper function that renders a single grid
+ * @param {number} x - The x offset of the grid
+ * @param {number} y - The y offset of the grid 
+ * @param {number} distance - Number of pixels between gridlines
+ */
+function Grid({x, y, distance=30}) {
+  return (
+    <Group>
+      <Line
+        x={x}
+        y={y}
+        points={[0, distance, 3*distance, distance]}
+        closed
+        stroke="black"/>
+      <Line
+        x={x}
+        y={y}
+        points={[0, 2*distance, 3*distance, 2*distance]}
+        closed
+        stroke="black"/>
+      <Line
+        x={x}
+        y={y}
+        points={[distance, 0, distance, 3*distance]}
+        closed
+        stroke="black"/>
+      <Line
+        x={x}
+        y={y}
+        points={[2*distance, 0, 2*distance, 3*distance]}
+        closed
+        stroke="black"/>
+    </Group>
+  );
+}
+
+/**
+ * Helper function that renders an empty board
+ * @param {number} distance - Distance between gridlines
+ * @param {number} x_off - Offset in the x direction
+ * @param {number} y_off - Offset in the y direction
+ */
+function EmptyBoard({distance = 30, x_off, y_off}) {
+  return (
+    [0, 4, 8].map((x) => {
+      return [0, 4, 8].map((y) => {
+        return <Grid 
+          x={x_off + x * distance}
+          y={y_off + y * distance}
+          distance={distance}
+          key={x + "," + y} />
+      })
+    })
+  )
+}
+
+/**
+ * Helper function which renders an X at position x, y
+ * on the game board.
+ * @param {number} grid - Grid position of the piece
+ * @param {number} pos - Square position of the piece
+ * @param {number} space - The space between gridlines
+ * @param {number} type - The type of piece (1 for X, 2 for O) 
+ * @param {number} x_off - Offset in the x direction
+ * @param {number} y_off - Offset in the y direction
+ */
+export function Piece({grid, pos, space, type, x_off, y_off}) {
+  if (type === 0) return;
+  var x = ((grid % 3) * space * 4) + ((pos % 3) * space)
+  var y = (Math.floor(grid / 3) * space * 4) + (Math.floor(pos / 3) * space)
+  if (type === 1) {
+    var padding = Math.floor(space * 0.2)
+    return (
+      <Group>
+        <Line
+          x={x + x_off}
+          y={y + y_off}
+          points={[padding, padding, space - padding, space - padding]}
+          stroke="red"/>
+        <Line
+          x={x + x_off}
+          y={y + y_off}
+          points={[padding, space - padding, space - padding, padding]}
+          stroke="red"/>
+      </Group>
+    )
+  } else if (type === -1) {
+    var radius = Math.floor(space * 0.7 * 0.5)
+    return (
+      <Circle
+        x={x + space/2 + x_off}
+        y={y + space/2 + y_off}
+        radius={radius}
+        stroke="blue" />
+    )
+  }
+}
+
+function OwnerOutline({grid, type, space, x_off, y_off}) {
+  if (type === 0) return;
+  var x = (grid % 3) * space * 4;
+  var y = Math.floor(grid / 3) * space * 4;
+  var color = (type === 1) ? "red" : "blue";
+  return (<Rect
+    x={x + x_off}
+    y={y + y_off}
+    stroke={color}
+    width={space * 3}
+    height={space * 3}
+  />);
+}
+
+/**
+ * Helper function that converts mouse coordinates into the
+ * (grid, pos) configuration that can interact with tic tac throw.
+ */
+function convertCoords(mousePos, x_off, y_off, size) {
+  let x = Math.floor((mousePos.x - x_off) / size);
+  let y = Math.floor((mousePos.y - y_off) / size);
+  // Eliminates moves to a bad square
+  if (
+    (x === 3 || x === 7 || y === 3 || y === 7) ||
+    (x < 0 || x > 10) ||
+    (y < 0 || y > 10)
+  )
+  {
+    return {grid: -1, pos: -1};
+  }
+  // Normalize x, y to be from 0 to 8
+  x = x - Math.floor(x / 4)
+  y = y - Math.floor(y / 4)
+  // Convert to grid and pos
+  let p = (x % 3) + 3 * (y % 3);
+  let g = (Math.floor(x / 3)) + 3 * (Math.floor(y / 3));
+  return {grid: g, pos: p};
+}
 
 /**
   * Child component of Game which renders the Tic Tac Throw board.
   *
-  * @param {Array<number>} pieces An array containing the location of each player's pieces
+  * @param {object} props
+  * @param {TicTacThrow} props.gamestate - The state of the game
+  * @param {number} props.x_off - The x offset of the board
+  * @param {number} props.size - Distance between gridlines
+  * @param {number} props.y_off - The y offset of the board
   */
-export function Board(pieces) {
-  pieces = pieces.pieces;
+export function Board({gamestate, size=30, x_off=0, y_off=0, ...rest}) {
+  // Creates a default hover handler if one isn't provided
+  if (rest.hoverHandler === undefined) {
+    rest.hoverHandler = (g, p) => {
+      console.log('Registered hover:', g, ',', p);
+    }
+  }
+  // Creates a default click handler if one isn't provided
+  if (rest.clickHandler === undefined) {
+    rest.clickHandler = (g, p) => {
+      console.log('Registered click:', g, ',', p);
+    }
+  }
+  // Converts mouse position to (grid, pos) format, and then calls the
+  // external hover handler if the coordinates have changed from the last
+  // call
+  const moveHandler = (e) => {
+    const mousePos = e.target.getStage().getPointerPosition();
+    var newPos = convertCoords(mousePos, x_off, y_off, size);
+    if (newPos.grid !== previousPos.grid || newPos.pos !== previousPos.pos) {
+      previousPos = newPos;
+      rest.hoverHandler(newPos.grid, newPos.pos);
+    }
+  }
+  // Converts mouse position to (grid, pos) format, and calls the external
+  // click handler
+  const clickHandler = (e) => {
+    const mousePos = e.target.getStage().getPointerPosition();
+    var newPos = convertCoords(mousePos, x_off, y_off, size);
+    rest.clickHandler(newPos.grid, newPos.pos);
+  }
   // Prints the default board
-  if (!pieces) {
+  if (gamestate === undefined) {
     return (
-      <div style={{fontFamily: "monospace"}}>
-        <p>
-          _|_|_ _|_|_ _|_|_<br />
-          _|_|_ _|_|_ _|_|_<br />
-          _|_|_ _|_|_ _|_|_
-        </p>
-        <p>
-          _|_|_ _|_|_ _|_|_<br />
-          _|_|_ _|_|_ _|_|_<br />
-          _|_|_ _|_|_ _|_|_
-        </p>
-        <p>
-          _|_|_ _|_|_ _|_|_<br />
-          _|_|_ _|_|_ _|_|_<br />
-          _|_|_ _|_|_ _|_|_
-        </p>
-      </div>
+      <EmptyBoard distance={size} x_off={x_off} y_off={y_off} />
     )
   }
 
-  // Turns piece information into string
-  var sp = pieces.map((arr) => {
-    return arr.map((piece) => {
-      if (piece === 0) return "_";
-      else if (piece === 1) return "X";
-      else return "O";
-    })
-  })
-
-  // Returns an ASCII art version of the board
-  // This is not coded cleanly, but it's just for the demo
+  // Returns a GUI representation of the gamestate
+  var piecesArray = [];
+  var ownerArray = [];
+  for (let grid=0; grid < 9; grid++) {
+    var grid_pieces = gamestate.get_board_by_grid(grid);
+    var owner = gamestate.owned[grid];
+    if (owner !== 0) {
+      console.log('new owner');
+      ownerArray.push(
+        <OwnerOutline
+          grid={grid}
+          type={owner}
+          space={size}
+          x_off={x_off}
+          y_off={y_off}
+          key={grid}
+          />
+      )
+    }
+    for (let pos=0; pos < 9; pos++) {
+      if (grid_pieces[pos] === 0) continue;
+      piecesArray.push(
+        <Piece
+          grid={grid}
+          pos={pos} 
+          space={size}
+          type={grid_pieces[pos]}
+          x_off={x_off}
+          y_off={y_off}
+          key={grid + "," + pos}/>
+      )
+    }
+  }
   return (
-    <div style={{fontFamily: "monospace"}}>
-      <p>
-        {sp[0][0]}|{sp[0][1]}|{sp[0][2]}
-        {" " + sp[1][0]}|{sp[1][1]}|{sp[1][2]}
-        {" " + sp[2][0]}|{sp[2][1]}|{sp[2][2]} <br />
-        {sp[0][3]}|{sp[0][4]}|{sp[0][5]} 
-        {" " + sp[1][3]}|{sp[1][4]}|{sp[1][5]} 
-        {" " + sp[2][3]}|{sp[2][4]}|{sp[2][5]} <br />
-        {sp[0][6]}|{sp[0][7]}|{sp[0][8]} 
-        {" " + sp[1][6]}|{sp[1][7]}|{sp[1][8]} 
-        {" " + sp[2][6]}|{sp[2][7]}|{sp[2][8]} <br />
-      </p>
-      <p>
-        {sp[3][0]}|{sp[3][1]}|{sp[3][2]} 
-        {" " + sp[4][0]}|{sp[4][1]}|{sp[4][2]} 
-        {" " + sp[5][0]}|{sp[5][1]}|{sp[5][2]} <br />
-        {sp[3][3]}|{sp[3][4]}|{sp[3][5]} 
-        {" " + sp[4][3]}|{sp[4][4]}|{sp[4][5]} 
-        {" " + sp[5][3]}|{sp[5][4]}|{sp[5][5]} <br />
-        {sp[3][6]}|{sp[3][7]}|{sp[3][8]} 
-        {" " + sp[4][6]}|{sp[4][7]}|{sp[4][8]} 
-        {" " + sp[5][6]}|{sp[5][7]}|{sp[5][8]} <br />
-      </p>
-      <p>
-        {sp[6][0]}|{sp[6][1]}|{sp[6][2]} 
-        {" " + sp[7][0]}|{sp[7][1]}|{sp[7][2]} 
-        {" " + sp[8][0]}|{sp[8][1]}|{sp[8][2]} <br />
-        {sp[6][3]}|{sp[6][4]}|{sp[6][5]} 
-        {" " + sp[7][3]}|{sp[7][4]}|{sp[7][5]} 
-        {" " + sp[8][3]}|{sp[8][4]}|{sp[8][5]} <br />
-        {sp[6][6]}|{sp[6][7]}|{sp[6][8]} 
-        {" " + sp[7][6]}|{sp[7][7]}|{sp[7][8]} 
-        {" " + sp[8][6]}|{sp[8][7]}|{sp[8][8]} <br />
-      </p>
-    </div>
+    <Group>
+      <EmptyBoard distance={size} x_off={x_off} y_off={y_off} />
+      {piecesArray}
+      {ownerArray}
+      <Rect
+        x={x_off}
+        y={y_off}
+        width={11 * size}
+        height={11 * size}
+        onMouseMove={moveHandler}
+        onClick={clickHandler}
+        />
+    </Group>
   )
 }
