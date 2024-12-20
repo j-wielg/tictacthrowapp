@@ -2,7 +2,6 @@ import { Board, Piece } from './Board';
 import { Group, Stage, Text, Layer, Rect } from 'react-konva';
 import { useState } from 'react';
 import { TicTacThrow } from 'ttt_gamelogic';
-import { render } from '@testing-library/react';
 
 
 /**
