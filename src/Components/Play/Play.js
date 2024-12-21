@@ -36,6 +36,12 @@ export default function Play() {
   // Otherwise we need to fetch the session using the session id
   if (session === undefined) {
     getSession(sessionId).then((ret) => {
+      if (ret === undefined) {
+        console.error('Could not find the session');
+        navigate('/play/');
+        sessionId = undefined;
+        return;
+      }
       // Kicks the user if this isn't one of their games
       if ((Parse.User.current().id !== ret.get('player1').id)
       && (Parse.User.current().id !== ret.get('player2').id)) {

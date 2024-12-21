@@ -60,10 +60,9 @@ export async function getUserSessions(user) {
 export async function getSession(id) {
   const session = new Parse.Object('Session');
   const query = new Parse.Query(session);
-  query.equalTo(id);
   try {
-    const results = await query.find();
-    return results[0];
+    const results = await query.get(id);
+    return results;
   } catch (e) {
     console.error(`Failed to get session`, id, ':', e);
   }

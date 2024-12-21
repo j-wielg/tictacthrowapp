@@ -1,7 +1,7 @@
 import { Board } from "../Game/Board";
 import { TicTacThrow } from "ttt_gamelogic";
 import { Stage, Layer, Rect } from "react-konva";
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Component which renders all of the user's currently active games.
@@ -10,18 +10,26 @@ import { Navigate } from 'react-router-dom';
  * @param {Array} props.sessions - A list of sessions associated to this user
  */
 export default function ActiveGames({ sessions }) {
+  const navigate = useNavigate();
   const cols = 3;
   const rows = Math.ceil(sessions.length / cols);
   var games = [];
+  var gameBoards = [];
+  var ids = [];
   var rects = [];
   var row = 0;
   var col = 0;
   var i = 0;
   for (const session of sessions) {
-    var ttt = TicTacThrow.new();
+    gameBoards.push(TicTacThrow.new());
+    var gamestate = session.get('game');
+    for (const [wasFree, grid, pos] of gamestate.get('pastState')) {
+      gameBoards[i].update(grid, pos);
+    }
+    ids.push(session.id);
     games.push(
       <Board 
-        gamestate={ttt}
+        gamestate={gameBoards[i]}
         size={10}
         x_off={140*col}
         y_off={140*row}
@@ -37,6 +45,11 @@ export default function ActiveGames({ sessions }) {
         fill="rgba(0,0,0,0.2)"
         x={140 * col}
         y={140 * row}
+        onClick={() => {
+          var path = '/play/' + session.id;
+          console.log(session.id);
+          navigate(path);
+        }}
       />
     );
     i += 1;
@@ -52,8 +65,8 @@ export default function ActiveGames({ sessions }) {
         width={110 * cols + 30 * (cols-1)}
         height={110 * rows + 30 * (rows-1)}>
         <Layer>
-          {rects}
           {games}
+          {rects}
         </Layer>
       </Stage>
     </div>
