@@ -2,7 +2,6 @@ import { Board, Piece } from './Board';
 import { Group, Stage, Text, Layer, Rect } from 'react-konva';
 import { useState } from 'react';
 import { TicTacThrow } from 'ttt_gamelogic';
-import { render } from '@testing-library/react';
 
 
 /**
@@ -100,14 +99,18 @@ function GameOver({gamestate, config}) {
   *
   * @param {object} props
   * @param {TicTacThrow} props.gamestate A gameState object fetched using Parse.
+  * @param {Funtion} props.updateCallback - A function to call when the game is updated
   */
-export function Game({gamestate}) {
+export function Game({gamestate, updateCallback}) {
   // State
   const [hoverSquare, setHoverSquare] = useState({
     x: 0,
     y: 0,
     render: false
   })
+  if (updateCallback === undefined) {
+    updateCallback = (() => {});
+  }
   // Holds the configuration settings for game objects
   const renderConfig = {
     x_off: 20,
@@ -138,6 +141,7 @@ export function Game({gamestate}) {
       return;
     } else if (gamestate.is_valid_move(grid, pos)) {
       gamestate.update(grid, pos);
+      updateCallback();
     }
     console.log('clicked');
   }

@@ -8,9 +8,10 @@ var previousPos = {grid: -1, pos: -1}
 
 /**
  * Helper function that renders a single grid
- * @param {number} x - The x offset of the grid
- * @param {number} y - The y offset of the grid 
- * @param {number} distance - Number of pixels between gridlines
+ * @param {Object} props
+ * @param {number} props.x - The x offset of the grid
+ * @param {number} props.y - The y offset of the grid 
+ * @param {number} props.distance - Number of pixels between gridlines
  */
 function Grid({x, y, distance=30}) {
   return (
@@ -20,24 +21,28 @@ function Grid({x, y, distance=30}) {
         y={y}
         points={[0, distance, 3*distance, distance]}
         closed
+        strokeWidth={1}
         stroke="black"/>
       <Line
         x={x}
         y={y}
         points={[0, 2*distance, 3*distance, 2*distance]}
         closed
+        strokeWidth={1}
         stroke="black"/>
       <Line
         x={x}
         y={y}
         points={[distance, 0, distance, 3*distance]}
         closed
+        strokeWidth={1}
         stroke="black"/>
       <Line
         x={x}
         y={y}
         points={[2*distance, 0, 2*distance, 3*distance]}
         closed
+        strokeWidth={1}
         stroke="black"/>
     </Group>
   );
