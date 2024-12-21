@@ -14,7 +14,8 @@ export async function createSession(player1, player2) {
   // Creates a gamestate object
   const newGame = new Parse.Object('Gamestate');
   var ttt = JSON.parse(TicTacThrow.new().jsonify());
-  for (const [key, value] of Object.entries(ttt)) {
+  for (var [key, value] of Object.entries(ttt)) {
+    if (key === 'past_state') key = 'pastState';
     newGame.set(key, value);
   }
   // Creates a session object
@@ -23,7 +24,7 @@ export async function createSession(player1, player2) {
   newSession.set('player2', player2);
   newSession.set('game', newGame);
   try {
-    newSession.save();
+    await newSession.save();
   } catch (e) {
     console.error(`Failed to create new session with error {e}`);
   }
@@ -43,7 +44,7 @@ export async function getUserSessions(user) {
 
   const userQuery = Parse.Query.or(p1Query, p2Query);
   try {
-    const sessions = userQuery.find();
+    const sessions = await userQuery.findAll();
     return sessions;
   } catch (e) {
     console.error(`Error fetching user sessions: {e}`);
@@ -74,3 +75,17 @@ export async function saveGame(game, session) {
     return false;
   }
 }
+
+/**
+ * Removes an active session. Also deletes the game associated to the session
+ *
+ * @param {Object} session - The session to delete
+ */
+export async function deleteSession(session) {
+  try {
+    await session.destroy();
+  } catch (e) {
+    console.error(`Failed to delete the session: {e}`);
+  }
+}
+
