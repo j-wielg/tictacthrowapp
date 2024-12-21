@@ -35,16 +35,16 @@ export default function AuthLogin() {
   }
 
   return (
-    <div>
-      <h1>Log In</h1>
-      {errorText ? (
-        <div>
-          <p>{errorText}</p>
-        </div>
-      ) : (
-        <div></div>
-      )}
-      <AuthForm user={user} onChange={onChangeHandler} onSubmit={onSubmitHandler} />
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="max-w-lg w-full bg-white shadow-xl rounded-lg p-8 border border-gray-200">
+        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Log In</h1>
+        {errorText && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded">
+            <p>{errorText}</p>
+          </div>
+        )}
+        <AuthForm user={user} onChange={onChangeHandler} onSubmit={onSubmitHandler} />
+      </div>
     </div>
   );
   

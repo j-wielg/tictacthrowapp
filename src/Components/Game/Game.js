@@ -113,7 +113,7 @@ export function Game({gamestate, updateCallback}) {
   }
   // Holds the configuration settings for game objects
   const renderConfig = {
-    x_off: 20,
+    x_off: 80,
     y_off: 80,
     size: 30
   }
