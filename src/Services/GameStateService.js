@@ -3,22 +3,50 @@ import Parse from "parse";
 // Gets game logic from rust package
 import { TicTacThrow } from 'ttt_gamelogic';
 
-/**
-  * Async function which returns the default starting game
-  *
-  * @returns {Promise<(Object|undefined)>} The result of the request, wrapped in a Promise
-  */
-export async function getDefaultGame() {
-  const gameState = Parse.Object.extend('Gamestate');
-  const query = new Parse.Query(gameState);
 
+/**
+ * Creates a new session associated to a specific user.
+ *
+ * @param {String} player1 - User object representing the user playing as player 1
+ * @param {String} player2 - User object representing the user playing as player 2
+ */
+export async function createSession(player1, player2) {
+  // Creates a gamestate object
+  const newGame = new Parse.Object('Gamestate');
+  var ttt = JSON.parse(TicTacThrow.new().jsonify());
+  for (const [key, value] of Object.entries(ttt)) {
+    newGame.set(key, value);
+  }
+  // Creates a session object
+  const newSession = new Parse.Object('Session');
+  newSession.set('player1', player1);
+  newSession.set('player2', player2);
+  newSession.set('game', newGame);
   try {
-    const result = await query.get("j8AA2tJY9s");
-    console.log("Got gamestate: ", result);
-    return result;
+    newSession.save();
   } catch (e) {
-    console.error("Failed to fetch game data!");
-    return undefined;
+    console.error(`Failed to create new session with error {e}`);
+  }
+}
+
+
+/**
+ * Gets the sessions associated to a specific user.
+ *
+ * @param user - The user whose sessions should be fetched
+ */
+export async function getUserSessions(user) {
+  const p1Query = new Parse.Query('Session');
+  p1Query.equalTo('player1', user);
+  const p2Query = new Parse.Query('Session');
+  p2Query.equalTo('player2', user);
+
+  const userQuery = Parse.Query.or(p1Query, p2Query);
+  try {
+    const sessions = userQuery.find();
+    return sessions;
+  } catch (e) {
+    console.error(`Error fetching user sessions: {e}`);
   }
 }
 
@@ -27,21 +55,20 @@ export async function getDefaultGame() {
  * Saves a game to the server. Takes a TicTacThrow object.
  *
  * @param {TicTacThrow} game - An object containing the game state
- * @param {String} id - The id of the game in Parse
+ * @param {Object} session - The session associated to the game
  * 
  * @returns {boolean} Whether or not the request succeeded
  */
-export async function saveGame(game, id) {
-  const gameState = Parse.Object.extend("Gamestate");
+export async function saveGame(game, session) {
+  const gameState = session.get('game');
   // Gets most of the values by converting from json
   var obj = JSON.parse(game.jsonify());
   // Sets the parse object
   for (const [key, value] of Object.entries(obj)) {
     gameState.set(key, value);
   }
-  gameState.set("id", id);
   try {
-    const response = await gameState.save();
+    await gameState.save();
     return true;
   } catch {
     return false;
