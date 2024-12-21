@@ -17,6 +17,9 @@ export default function Navbar() {
         <li>
           <Link to="/settings">Settings</Link>
         </li>
+        <li>
+          <Link to="/play">Play as Guest</Link>
+        </li>
       </ul>
     </div>
   );

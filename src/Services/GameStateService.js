@@ -53,6 +53,23 @@ export async function getUserSessions(user) {
 
 
 /**
+ * Gets a session by its session id
+ *  
+ * @param {String} id - The session's id
+ */
+export async function getSession(id) {
+  const session = new Parse.Object('Session');
+  const query = new Parse.Query(session);
+  query.equalTo(id);
+  try {
+    const results = await query.find();
+    return results[0];
+  } catch (e) {
+    console.error(`Failed to get session`, id, ':', e);
+  }
+}
+
+/**
  * Saves a game to the server. Takes a TicTacThrow object.
  *
  * @param {TicTacThrow} game - An object containing the game state
@@ -65,7 +82,8 @@ export async function saveGame(game, session) {
   // Gets most of the values by converting from json
   var obj = JSON.parse(game.jsonify());
   // Sets the parse object
-  for (const [key, value] of Object.entries(obj)) {
+  for (let [key, value] of Object.entries(obj)) {
+    if (key === 'past_state') key = 'pastState';
     gameState.set(key, value);
   }
   try {
