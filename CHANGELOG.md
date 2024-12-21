@@ -1,10 +1,11 @@
 # Changelog
 
-## [0.4.0] - 2024-11-18
+## [0.4.0] - 2024-12-20
 
 ### Added
   
   - The board is now rendered using the `react-konva` package
+  - The game logic has been added
 
 ### Changed
 
